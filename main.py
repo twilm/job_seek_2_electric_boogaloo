@@ -1,5 +1,6 @@
 from bs4 import BeautifulSoup
 import requests
+import pandas as pd
 
 
 def merge(list1, list2, list3):
@@ -37,23 +38,23 @@ def merge(list1, list2, list3):
             break
     return merged_list
 
-
-r = requests.get("https://au.jora.com/j?sp=homepage&q=&l=Maryborough+QLD")
-soup = BeautifulSoup(r.content, 'lxml')
-
 company = []
 local = []
 title = []
-jobs = soup.find('div', class_="jobresults").find_all('article')
-for job in jobs:
-    try:
-        company += job.find('span', class_='job-company').get_text().split('\n')
-        local += job.find('span', class_='job-location').get_text().split('\n')
-        title += job.find('h3', class_='job-title').get_text().split('\n')
-    except:
-        pass
+for page in range(1, 10):
+    r = requests.get(f'https://au.jora.com/j?l=Maryborough+QLD&p={page}')
+    soup = BeautifulSoup(r.content, 'lxml')
+
+    jobs = soup.find('div', class_="jobresults").find_all('article')
+    for job in jobs:
+        try:
+            company += job.find('span', class_='job-company').get_text().split('\n')
+            local += job.find('span', class_='job-location').get_text().split('\n')
+            title += job.find('h3', class_='job-title').get_text().split('\n')
+        except:
+            pass
 
 
-print(merge(company, local, title))
+merged_jobs = merge(company, local, title)
+df = pd.DataFrame(merged_jobs, columns=['Company', 'Location', 'Title'])
 
-# print(jobs.get_text())
