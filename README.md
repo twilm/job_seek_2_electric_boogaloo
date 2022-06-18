@@ -14,7 +14,7 @@
 
 
 Job Seeker 2 Electric Boogaloo is a script I have written in order to automate the Job Search requirements for CenterLink in Australia.
-This is currently hard coded to a specific town for demonstration purposes. Will update this shortly to ensure it is dynamic, and will take input. 
+This is currently hard coded to a specific town for demonstration purposes. Will update this shortly to ensure it is dynamic, and will take user input. 
 
 
 
