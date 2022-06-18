@@ -15,7 +15,8 @@ def yellow_pages(company, location):
     from bs4 import BeautifulSoup
 
     # Setup
-    driver = webdriver.Chrome(service=Service(ChromeDriverManager(chrome_type=ChromeType.CHROMIUM).install()))
+    CHROMEDRIVER_PATH = ChromeDriverManager(chrome_type=ChromeType.CHROMIUM).install() 
+    driver = webdriver.Chrome(CHROMEDRIVER_PATH)
     driver.get('https://www.yellowpages.com.au/')
 
     # Bot Time
@@ -27,7 +28,7 @@ def yellow_pages(company, location):
 
     soup = BeautifulSoup(driver.page_source, 'lxml')
     button = soup.find('div', class_='Box__Div-sc-dws99b-0 cINsGc').find('button', class_='MuiButtonBase-root MuiButton-root MuiButton-text MuiButton-textPrimary MuiButton-fullWidth')
-    print(button.get_text())
+    return button.get_text()
 
     driver.close()
 
@@ -70,22 +71,34 @@ def merge(list1, list2, list3):
 company = []
 local = []
 title = []
-for page in range(1, 10):
+for page in range(1):
     r = requests.get(f'https://au.jora.com/j?l=Maryborough+QLD&p={page}')
     soup = BeautifulSoup(r.content, 'lxml')
 
     jobs = soup.find('div', class_="jobresults").find_all('article')
-    for job in jobs:
-        try:
-            company += job.find('span', class_='job-company').get_text().split('\n')
-            local += job.find('span', class_='job-location').get_text().split('\n')
-            title += job.find('h3', class_='job-title').get_text().split('\n')
-        except:
-            pass
+    for index, job in enumerate(jobs):
+        if index <= 3:
+            try:
+                company += job.find('span', class_='job-company').get_text().split('\n')
+                local += job.find('span', class_='job-location').get_text().split('\n')
+                title += job.find('h3', class_='job-title').get_text().split('\n')
+            except:
+                pass
 
-for companies in company:
-    print(yellow_pages(companies, 'Maryborough'))
+phone_nums = []
+for index, companies in enumerate(company):
+    if index <= 3:
+        phone_nums += yellow_pages(companies, 'Maryborough').split()
+    else:
+        break
+        
+
 
 
 merged_jobs = merge(company, local, title)
 df = pd.DataFrame(merged_jobs, columns=['Company', 'Location', 'Title'])
+
+phone_nums = list(zip(*[iter(phone_nums)]*3))
+res = [' '.join(tups) for tups in phone_nums]
+df['Phone Nums'] = res
+print(df)
