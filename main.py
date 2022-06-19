@@ -98,7 +98,10 @@ for index, companies in enumerate(company):
 merged_jobs = merge(company, local, title)
 df = pd.DataFrame(merged_jobs, columns=['Company', 'Location', 'Title'])
 
+print(df) 
 phone_nums = list(zip(*[iter(phone_nums)]*3))
 res = [' '.join(tups) for tups in phone_nums]
 df['Phone Nums'] = res
 print(df)
+gfg_csv_data = df.to_csv('Jobs.csv', index = False)
+print('\nCSV String:\n', gfg_csv_data)
